@@ -4,8 +4,9 @@ import Header from '@/components/Header';
 import BlogPostForm from '@/components/BlogPostForm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Edit, Trash2, Eye, BarChart3 } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, BarChart3, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 interface BlogPost {
   id: string;
@@ -17,33 +18,74 @@ interface BlogPost {
   category: string;
   tags: string[];
   featured: boolean;
+  views?: number;
 }
 
 const AdminDashboard = () => {
   const [currentView, setCurrentView] = useState<'dashboard' | 'create' | 'edit'>('dashboard');
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
   const [posts, setPosts] = useState<BlogPost[]>([
     {
       id: '1',
-      title: 'Getting Started with React Hooks',
-      excerpt: 'Learn how to use React Hooks effectively...',
-      content: 'React Hooks revolutionized...',
+      title: 'Getting Started with React Hooks: A Complete Guide',
+      excerpt: 'Learn how to use React Hooks to manage state and side effects in your functional components. This comprehensive guide covers useState, useEffect, and custom hooks.',
+      content: 'React Hooks revolutionized how we write React components...',
       author: 'Sarah Johnson',
       date: '2024-01-15',
       category: 'Technology',
-      tags: ['React', 'JavaScript'],
+      tags: ['React', 'JavaScript', 'Frontend'],
       featured: true,
+      views: 1250
     },
     {
       id: '2',
-      title: 'The Future of Web Development',
-      excerpt: 'Explore the latest trends...',
-      content: 'Web development continues...',
+      title: 'The Future of Web Development in 2024',
+      excerpt: 'Explore the latest trends and technologies shaping the future of web development, from AI integration to new JavaScript frameworks.',
+      content: 'Web development continues to evolve at a rapid pace...',
       author: 'Mike Chen',
       date: '2024-01-12',
       category: 'Technology',
-      tags: ['Web Development', 'Trends'],
+      tags: ['Web Development', 'Trends', 'AI'],
       featured: false,
+      views: 890
+    },
+    {
+      id: '3',
+      title: 'Building Scalable APIs with Node.js',
+      excerpt: 'Learn best practices for creating robust and scalable APIs using Node.js, Express, and modern development patterns.',
+      content: 'Creating scalable APIs is crucial for modern applications...',
+      author: 'Alex Rodriguez',
+      date: '2024-01-10',
+      category: 'Backend',
+      tags: ['Node.js', 'API', 'Backend'],
+      featured: false,
+      views: 654
+    },
+    {
+      id: '4',
+      title: 'CSS Grid vs Flexbox: When to Use What',
+      excerpt: 'A detailed comparison of CSS Grid and Flexbox, helping you choose the right layout method for your projects.',
+      content: 'CSS Grid and Flexbox are powerful layout tools...',
+      author: 'Emma Wilson',
+      date: '2024-01-08',
+      category: 'Design',
+      tags: ['CSS', 'Layout', 'Frontend'],
+      featured: false,
+      views: 432
+    },
+    {
+      id: '5',
+      title: 'Mastering TypeScript: Advanced Types and Patterns',
+      excerpt: 'Dive deep into TypeScript\'s advanced type system and learn patterns that will make your code more robust and maintainable.',
+      content: 'TypeScript\'s type system is incredibly powerful...',
+      author: 'David Kim',
+      date: '2024-01-05',
+      category: 'Technology',
+      tags: ['TypeScript', 'JavaScript', 'Programming'],
+      featured: false,
+      views: 789
     }
   ]);
 
@@ -51,10 +93,9 @@ const AdminDashboard = () => {
 
   const handleSavePost = (postData: Omit<BlogPost, 'id' | 'date'>) => {
     if (editingPost) {
-      // Update existing post
       setPosts(prev => prev.map(post => 
         post.id === editingPost.id 
-          ? { ...postData, id: editingPost.id, date: editingPost.date }
+          ? { ...postData, id: editingPost.id, date: editingPost.date, views: editingPost.views }
           : post
       ));
       toast({
@@ -62,11 +103,11 @@ const AdminDashboard = () => {
         description: "Your blog post has been successfully updated.",
       });
     } else {
-      // Create new post
       const newPost: BlogPost = {
         ...postData,
         id: Date.now().toString(),
         date: new Date().toISOString(),
+        views: 0,
       };
       setPosts(prev => [newPost, ...prev]);
       toast({
@@ -92,11 +133,31 @@ const AdminDashboard = () => {
     });
   };
 
+  const toggleFeatured = (postId: string) => {
+    setPosts(prev => prev.map(post => 
+      post.id === postId ? { ...post, featured: !post.featured } : post
+    ));
+    toast({
+      title: "Post updated",
+      description: "Featured status has been updated.",
+    });
+  };
+
+  const categories = ['all', ...Array.from(new Set(posts.map(post => post.category)))];
+  
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesCategory = filterCategory === 'all' || post.category === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   const stats = {
     totalPosts: posts.length,
     featuredPosts: posts.filter(p => p.featured).length,
     categories: new Set(posts.map(p => p.category)).size,
-    totalViews: '12.5k'
+    totalViews: posts.reduce((sum, post) => sum + (post.views || 0), 0).toLocaleString()
   };
 
   if (currentView === 'create') {
@@ -104,15 +165,13 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
-            <Button 
-              variant="outline" 
-              onClick={() => setCurrentView('dashboard')}
-              className="mb-4"
-            >
-              ← Back to Dashboard
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            className="mb-4"
+          >
+            ← Back to Dashboard
+          </Button>
           <BlogPostForm onSave={handleSavePost} />
         </div>
       </div>
@@ -124,18 +183,16 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-6">
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setCurrentView('dashboard');
-                setEditingPost(null);
-              }}
-              className="mb-4"
-            >
-              ← Back to Dashboard
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              setCurrentView('dashboard');
+              setEditingPost(null);
+            }}
+            className="mb-4"
+          >
+            ← Back to Dashboard
+          </Button>
           <BlogPostForm post={editingPost} onSave={handleSavePost} />
         </div>
       </div>
@@ -147,7 +204,10 @@ const AdminDashboard = () => {
       <Header />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <p className="text-gray-600 mt-1">Manage your blog posts and content</p>
+          </div>
           <Button 
             onClick={() => setCurrentView('create')}
             className="flex items-center space-x-2"
@@ -159,48 +219,52 @@ const AdminDashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Posts</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalPosts}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.totalPosts}</p>
+                  <p className="text-sm text-green-600">+2 this week</p>
                 </div>
                 <BarChart3 className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Featured</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.featuredPosts}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.featuredPosts}</p>
+                  <p className="text-sm text-blue-600">Active now</p>
                 </div>
                 <Eye className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Categories</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.categories}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.categories}</p>
+                  <p className="text-sm text-purple-600">Well organized</p>
                 </div>
                 <Edit className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Views</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalViews}</p>
+                  <p className="text-3xl font-bold text-gray-900">{stats.totalViews}</p>
+                  <p className="text-sm text-orange-600">+15% this month</p>
                 </div>
                 <BarChart3 className="h-8 w-8 text-orange-600" />
               </div>
@@ -208,28 +272,87 @@ const AdminDashboard = () => {
           </Card>
         </div>
 
+        {/* Filters and Search */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search posts by title, author, or tags..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Filter className="h-4 w-4 text-gray-500" />
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Posts Management */}
         <Card>
           <CardHeader>
-            <CardTitle>Manage Posts</CardTitle>
+            <CardTitle>Manage Posts ({filteredPosts.length} of {posts.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {posts.map(post => (
-                <div key={post.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-white">
+              {filteredPosts.map(post => (
+                <div key={post.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{post.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{post.excerpt}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                      <span>By {post.author}</span>
-                      <span>{new Date(post.date).toLocaleDateString()}</span>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">{post.category}</span>
+                    <div className="flex items-center space-x-3 mb-2">
+                      <h3 className="font-semibold text-gray-900">{post.title}</h3>
                       {post.featured && (
-                        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Featured</span>
+                        <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                          Featured
+                        </span>
                       )}
                     </div>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{post.excerpt}</p>
+                    <div className="flex items-center space-x-4 mt-3 text-xs text-gray-500">
+                      <span className="flex items-center space-x-1">
+                        <span>By</span>
+                        <span className="font-medium text-gray-700">{post.author}</span>
+                      </span>
+                      <span>{new Date(post.date).toLocaleDateString()}</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
+                        {post.category}
+                      </span>
+                      <span className="flex items-center space-x-1">
+                        <Eye className="h-3 w-3" />
+                        <span>{post.views || 0} views</span>
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {post.tags.slice(0, 3).map(tag => (
+                        <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 ml-4">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => toggleFeatured(post.id)}
+                      className={post.featured ? "text-yellow-600 border-yellow-200" : ""}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -241,13 +364,19 @@ const AdminDashboard = () => {
                       variant="outline" 
                       size="sm"
                       onClick={() => handleDeletePost(post.id)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               ))}
+              {filteredPosts.length === 0 && (
+                <div className="text-center py-8">
+                  <h3 className="text-lg font-medium text-gray-600 mb-2">No posts found</h3>
+                  <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
