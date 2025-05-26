@@ -6,7 +6,7 @@ import { Search, TrendingUp, Users, Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 
-// Enhanced sample blog posts data with more diverse content
+// Enhanced sample blog posts data with images
 const samplePosts = [
   {
     id: '1',
@@ -18,6 +18,9 @@ const samplePosts = [
     category: 'Technology',
     tags: ['React', 'JavaScript', 'Frontend'],
     featured: true,
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face',
+    readTime: '8 min read'
   },
   {
     id: '2',
@@ -29,6 +32,9 @@ const samplePosts = [
     category: 'Technology',
     tags: ['Web Development', 'Trends', 'AI'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+    readTime: '6 min read'
   },
   {
     id: '3',
@@ -40,6 +46,9 @@ const samplePosts = [
     category: 'Backend',
     tags: ['Node.js', 'API', 'Backend'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+    readTime: '12 min read'
   },
   {
     id: '4',
@@ -51,6 +60,9 @@ const samplePosts = [
     category: 'Design',
     tags: ['CSS', 'Layout', 'Frontend'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+    readTime: '10 min read'
   },
   {
     id: '5',
@@ -62,6 +74,9 @@ const samplePosts = [
     category: 'Technology',
     tags: ['TypeScript', 'JavaScript', 'Programming'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
+    readTime: '15 min read'
   },
   {
     id: '6',
@@ -73,6 +88,9 @@ const samplePosts = [
     category: 'Design',
     tags: ['UX', 'Design', 'User Experience'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
+    readTime: '9 min read'
   },
   {
     id: '7',
@@ -84,6 +102,9 @@ const samplePosts = [
     category: 'Technology',
     tags: ['Machine Learning', 'AI', 'Web Development'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=100&h=100&fit=crop&crop=face',
+    readTime: '11 min read'
   },
   {
     id: '8',
@@ -95,6 +116,9 @@ const samplePosts = [
     category: 'Technology',
     tags: ['Sustainability', 'Performance', 'Green Tech'],
     featured: false,
+    image: 'https://images.unsplash.com/photo-1486718448742-163732cd1544?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
+    readTime: '7 min read'
   }
 ];
 
@@ -122,97 +146,102 @@ const BlogHome = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <Header />
       
-      {/* Enhanced Hero Section */}
-      <section className="bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-10"></div>
+      {/* Modern Hero Section */}
+      <section className="relative bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-            Welcome to <span className="text-yellow-300">StreamBlog</span>
+          <h1 className="text-7xl md:text-8xl font-bold mb-8 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent leading-tight">
+            StreamBlog
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-4xl mx-auto leading-relaxed">
-            Discover insights, tutorials, and stories from the world of technology and beyond. 
-            Join our community of passionate writers and readers.
+          <p className="text-2xl md:text-3xl mb-12 text-gray-200 max-w-4xl mx-auto font-light leading-relaxed">
+            Where ideas flow and stories come to life. 
+            <span className="block mt-2 text-blue-300">Join our community of passionate writers.</span>
           </p>
           
-          {/* Stats */}
-          <div className="flex justify-center space-x-8 mb-8">
+          <div className="flex justify-center space-x-12 mb-12">
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-300">{stats.totalPosts}+</div>
-              <div className="text-sm text-blue-200">Articles</div>
+              <div className="text-4xl font-bold text-blue-400">{stats.totalPosts}+</div>
+              <div className="text-sm text-gray-300 uppercase tracking-wider">Stories</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-300">{stats.authors}+</div>
-              <div className="text-sm text-blue-200">Authors</div>
+              <div className="text-4xl font-bold text-purple-400">{stats.authors}+</div>
+              <div className="text-sm text-gray-300 uppercase tracking-wider">Writers</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-300">{stats.categories}</div>
-              <div className="text-sm text-blue-200">Categories</div>
+              <div className="text-4xl font-bold text-pink-400">{stats.categories}</div>
+              <div className="text-sm text-gray-300 uppercase tracking-wider">Topics</div>
             </div>
           </div>
 
-          <div className="max-w-lg mx-auto relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+          <div className="max-w-2xl mx-auto relative">
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 h-6 w-6" />
             <Input
               type="text"
-              placeholder="Search articles, authors, or topics..."
+              placeholder="Discover amazing stories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12 py-4 text-gray-900 text-lg rounded-full border-0 shadow-lg"
+              className="pl-16 py-6 text-gray-900 text-lg rounded-2xl border-0 shadow-2xl bg-white/95 backdrop-blur-sm"
             />
           </div>
         </div>
       </section>
 
-      {/* Quick Stats Cards */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 mb-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-            <CardContent className="p-6 text-center">
-              <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Trending Topics</h3>
-              <p className="text-gray-600">React, TypeScript, and AI are the most popular topics this month</p>
+      {/* Enhanced Feature Cards */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 border-0 hover:-translate-y-2">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Trending Content</h3>
+              <p className="text-gray-600 leading-relaxed">Discover the most popular stories and emerging topics in tech and beyond</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-            <CardContent className="p-6 text-center">
-              <Users className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Expert Authors</h3>
-              <p className="text-gray-600">Learn from industry experts and experienced developers</p>
+          <Card className="bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 border-0 hover:-translate-y-2">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Expert Authors</h3>
+              <p className="text-gray-600 leading-relaxed">Learn from industry leaders and passionate developers sharing their knowledge</p>
             </CardContent>
           </Card>
           
-          <Card className="bg-white shadow-lg hover:shadow-xl transition-shadow">
-            <CardContent className="p-6 text-center">
-              <Clock className="h-8 w-8 text-purple-600 mx-auto mb-3" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Fresh Content</h3>
-              <p className="text-gray-600">New articles published weekly covering the latest trends</p>
+          <Card className="bg-white/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-300 border-0 hover:-translate-y-2">
+            <CardContent className="p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Clock className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Fresh Insights</h3>
+              <p className="text-gray-600 leading-relaxed">Weekly updates with cutting-edge insights and practical tutorials</p>
             </CardContent>
           </Card>
         </div>
       </section>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        {/* Enhanced Category Filter */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
-          <div className="flex flex-wrap gap-3">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        {/* Category Filter */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Explore by Category</h2>
+          <div className="flex flex-wrap justify-center gap-4">
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full transition-all duration-200 font-medium ${
+                className={`px-8 py-4 rounded-full transition-all duration-300 font-semibold text-lg ${
                   selectedCategory === category
-                    ? 'bg-blue-600 text-white shadow-lg transform scale-105'
-                    : 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 shadow-sm hover:shadow-md'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-blue-300 shadow-md hover:shadow-lg'
                 }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
                 {category !== 'all' && (
-                  <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                  <span className="ml-3 text-sm bg-white/20 text-white px-3 py-1 rounded-full">
                     {samplePosts.filter(p => p.category === category).length}
                   </span>
                 )}
@@ -221,61 +250,64 @@ const BlogHome = () => {
           </div>
         </div>
 
-        {/* Featured and Regular Posts */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            {searchTerm || selectedCategory !== 'all' ? 'Search Results' : 'Latest Articles'}
-          </h2>
-        </div>
-
         {/* Blog Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredPost && (
-            <BlogCard post={featuredPost} featured={true} />
-          )}
-          {regularPosts.map(post => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
+        {filteredPosts.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">
+              {searchTerm || selectedCategory !== 'all' ? 'Search Results' : 'Latest Stories'}
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredPost && (
+                <div className="md:col-span-2 lg:col-span-2">
+                  <BlogCard post={featuredPost} featured={true} />
+                </div>
+              )}
+              {regularPosts.map(post => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {filteredPosts.length === 0 && (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">📝</div>
-            <h3 className="text-2xl font-semibold text-gray-600 mb-3">No posts found</h3>
-            <p className="text-gray-500 text-lg mb-6">Try adjusting your search or category filter</p>
+          <div className="text-center py-20">
+            <div className="text-8xl mb-6">🔍</div>
+            <h3 className="text-3xl font-bold text-gray-600 mb-4">No stories found</h3>
+            <p className="text-gray-500 text-xl mb-8 max-w-md mx-auto">Try adjusting your search or explore different categories</p>
             <button
               onClick={() => {
                 setSearchTerm('');
                 setSelectedCategory('all');
               }}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg"
             >
-              Show All Posts
+              Show All Stories
             </button>
           </div>
         )}
 
-        {/* Newsletter Signup */}
-        <section className="mt-20">
-          <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <CardContent className="p-12 text-center">
-              <h3 className="text-3xl font-bold mb-4">Stay Updated</h3>
-              <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                Get the latest articles and insights delivered straight to your inbox. 
-                Join thousands of developers and designers who trust StreamBlog.
+        {/* Newsletter Section */}
+        <section className="mt-24">
+          <Card className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white border-0 shadow-2xl">
+            <CardContent className="p-16 text-center">
+              <h3 className="text-4xl font-bold mb-6">Never Miss a Story</h3>
+              <p className="text-xl text-purple-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Get the latest articles, insights, and exclusive content delivered to your inbox. 
+                Join our community of curious minds and passionate learners.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <div className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                 <Input
                   type="email"
-                  placeholder="Enter your email address"
-                  className="flex-1 text-gray-900"
+                  placeholder="Enter your email"
+                  className="flex-1 text-gray-900 py-4 px-6 rounded-full text-lg"
                 />
-                <button className="bg-yellow-400 text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-yellow-300 transition-colors">
+                <button className="bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-10 py-4 rounded-full font-bold hover:from-yellow-300 hover:to-orange-400 transition-all duration-300 text-lg shadow-lg">
                   Subscribe
                 </button>
               </div>
-              <p className="text-sm text-blue-200 mt-4">
-                No spam, unsubscribe at any time.
+              <p className="text-sm text-purple-200 mt-6">
+                Free forever. Unsubscribe anytime.
               </p>
             </CardContent>
           </Card>

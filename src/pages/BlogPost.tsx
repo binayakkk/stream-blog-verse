@@ -2,10 +2,10 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
-import { Calendar, User, Tag, ArrowLeft } from 'lucide-react';
+import { Calendar, User, Tag, ArrowLeft, Clock, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// Sample blog posts data (in a real app, this would come from an API or database)
+// Sample blog posts data with images
 const samplePosts = [
   {
     id: '1',
@@ -94,6 +94,10 @@ React Hooks provide a more direct API to the React concepts you already know. Th
     category: 'Technology',
     tags: ['React', 'JavaScript', 'Frontend'],
     featured: true,
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face',
+    readTime: '8 min read',
+    views: 2400
   }
 ];
 
@@ -172,15 +176,20 @@ const BlogPost = () => {
           </Link>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Hero Image */}
-          <div className="h-64 md:h-80 bg-gradient-to-br from-blue-500 to-purple-600 relative">
-            <div className="absolute inset-0 bg-black bg-opacity-20" />
-            <div className="absolute bottom-6 left-6 right-6">
-              <span className="inline-block px-3 py-1 bg-white bg-opacity-90 text-blue-600 text-sm font-medium rounded-full mb-4">
+          <div className="h-80 md:h-96 relative overflow-hidden">
+            <img
+              src={post.image || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=600&fit=crop'}
+              alt={post.title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-8 left-8 right-8">
+              <span className="inline-block px-4 py-2 bg-white/90 backdrop-blur-sm text-blue-600 text-sm font-semibold rounded-full mb-4">
                 {post.category}
               </span>
-              <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
                 {post.title}
               </h1>
             </div>
@@ -190,24 +199,39 @@ const BlogPost = () => {
           <div className="p-8 md:p-12">
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-200">
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4" />
-                <span>By {post.author}</span>
+              <div className="flex items-center space-x-3">
+                <img
+                  src={post.authorAvatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'}
+                  alt={post.author}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+                />
+                <div>
+                  <div className="font-semibold text-gray-900">By {post.author}</div>
+                  <div className="text-gray-500">{new Date(post.date).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}</div>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-4 w-4" />
-                <span>{new Date(post.date).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}</span>
-              </div>
+              {post.readTime && (
+                <div className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{post.readTime}</span>
+                </div>
+              )}
+              {post.views && (
+                <div className="flex items-center space-x-2">
+                  <Eye className="h-4 w-4" />
+                  <span>{post.views.toLocaleString()} views</span>
+                </div>
+              )}
               <div className="flex items-center space-x-2">
                 <Tag className="h-4 w-4" />
                 <div className="flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
-                    <span key={tag} className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs">
-                      {tag}
+                    <span key={tag} className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
+                      #{tag}
                     </span>
                   ))}
                 </div>
@@ -216,7 +240,7 @@ const BlogPost = () => {
 
             {/* Article Content */}
             <div className="prose prose-lg max-w-none">
-              <p className="text-xl text-gray-600 leading-relaxed mb-8">
+              <p className="text-xl text-gray-600 leading-relaxed mb-8 font-light">
                 {post.excerpt}
               </p>
               
@@ -230,8 +254,10 @@ const BlogPost = () => {
         {/* Related Posts Section */}
         <div className="mt-12">
           <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Posts</h3>
-          <div className="bg-white rounded-lg p-6 text-center">
-            <p className="text-gray-600">More related posts coming soon!</p>
+          <div className="bg-white rounded-lg p-8 text-center shadow-lg">
+            <div className="text-6xl mb-4">📚</div>
+            <h4 className="text-xl font-semibold text-gray-700 mb-2">More great content coming soon!</h4>
+            <p className="text-gray-600">Check back later for more related articles and insights.</p>
           </div>
         </div>
       </article>
