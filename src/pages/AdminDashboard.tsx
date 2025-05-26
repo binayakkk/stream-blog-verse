@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import BlogPostForm from '@/components/BlogPostForm';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
@@ -441,7 +442,7 @@ const AdminDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <BlogPostForm />
+                <BlogPostForm onSave={handleSavePost} />
               </CardContent>
             </Card>
           </TabsContent>
