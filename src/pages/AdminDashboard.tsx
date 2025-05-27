@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { usePosts } from '@/hooks/usePosts';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import BlogPostForm from '@/components/BlogPostForm';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
@@ -21,7 +23,8 @@ import {
   Users,
   Settings,
   FileText,
-  TrendingUp
+  TrendingUp,
+  ExternalLink
 } from 'lucide-react';
 
 interface BlogPost {
@@ -42,90 +45,20 @@ const AdminDashboard = () => {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
-  const [posts, setPosts] = useState<BlogPost[]>([
-    {
-      id: '1',
-      title: 'Getting Started with React Hooks: A Complete Guide',
-      excerpt: 'Learn how to use React Hooks to manage state and side effects in your functional components. This comprehensive guide covers useState, useEffect, and custom hooks.',
-      content: 'React Hooks revolutionized how we write React components...',
-      author: 'Sarah Johnson',
-      date: '2024-01-15',
-      category: 'Technology',
-      tags: ['React', 'JavaScript', 'Frontend'],
-      featured: true,
-      views: 1250
-    },
-    {
-      id: '2',
-      title: 'The Future of Web Development in 2024',
-      excerpt: 'Explore the latest trends and technologies shaping the future of web development, from AI integration to new JavaScript frameworks.',
-      content: 'Web development continues to evolve at a rapid pace...',
-      author: 'Mike Chen',
-      date: '2024-01-12',
-      category: 'Technology',
-      tags: ['Web Development', 'Trends', 'AI'],
-      featured: false,
-      views: 890
-    },
-    {
-      id: '3',
-      title: 'Building Scalable APIs with Node.js',
-      excerpt: 'Learn best practices for creating robust and scalable APIs using Node.js, Express, and modern development patterns.',
-      content: 'Creating scalable APIs is crucial for modern applications...',
-      author: 'Alex Rodriguez',
-      date: '2024-01-10',
-      category: 'Backend',
-      tags: ['Node.js', 'API', 'Backend'],
-      featured: false,
-      views: 654
-    },
-    {
-      id: '4',
-      title: 'CSS Grid vs Flexbox: When to Use What',
-      excerpt: 'A detailed comparison of CSS Grid and Flexbox, helping you choose the right layout method for your projects.',
-      content: 'CSS Grid and Flexbox are powerful layout tools...',
-      author: 'Emma Wilson',
-      date: '2024-01-08',
-      category: 'Design',
-      tags: ['CSS', 'Layout', 'Frontend'],
-      featured: false,
-      views: 432
-    },
-    {
-      id: '5',
-      title: 'Mastering TypeScript: Advanced Types and Patterns',
-      excerpt: 'Dive deep into TypeScript\'s advanced type system and learn patterns that will make your code more robust and maintainable.',
-      content: 'TypeScript\'s type system is incredibly powerful...',
-      author: 'David Kim',
-      date: '2024-01-05',
-      category: 'Technology',
-      tags: ['TypeScript', 'JavaScript', 'Programming'],
-      featured: false,
-      views: 789
-    }
-  ]);
-
+  
+  const { posts, addPost, updatePost, deletePost, toggleFeatured } = usePosts();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSavePost = (postData: Omit<BlogPost, 'id' | 'date'>) => {
     if (editingPost) {
-      setPosts(prev => prev.map(post => 
-        post.id === editingPost.id 
-          ? { ...postData, id: editingPost.id, date: editingPost.date, views: editingPost.views }
-          : post
-      ));
+      updatePost(editingPost.id, postData);
       toast({
         title: "Post updated",
         description: "Your blog post has been successfully updated.",
       });
     } else {
-      const newPost: BlogPost = {
-        ...postData,
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        views: 0,
-      };
-      setPosts(prev => [newPost, ...prev]);
+      addPost(postData);
       toast({
         title: "Post created",
         description: "Your new blog post has been successfully created.",
@@ -142,21 +75,23 @@ const AdminDashboard = () => {
   };
 
   const handleDeletePost = (postId: string) => {
-    setPosts(prev => prev.filter(post => post.id !== postId));
+    deletePost(postId);
     toast({
       title: "Post deleted",
       description: "The blog post has been successfully deleted.",
     });
   };
 
-  const toggleFeatured = (postId: string) => {
-    setPosts(prev => prev.map(post => 
-      post.id === postId ? { ...post, featured: !post.featured } : post
-    ));
+  const handleToggleFeatured = (postId: string) => {
+    toggleFeatured(postId);
     toast({
       title: "Post updated",
       description: "Featured status has been updated.",
     });
+  };
+
+  const handleViewPost = (postId: string) => {
+    navigate(`/post/${postId}`);
   };
 
   const categories = ['all', ...Array.from(new Set(posts.map(post => post.category)))];
@@ -399,7 +334,15 @@ const AdminDashboard = () => {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => toggleFeatured(post.id)}
+                          onClick={() => handleViewPost(post.id)}
+                          className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleToggleFeatured(post.id)}
                           className={post.featured ? "text-yellow-600 border-yellow-200" : ""}
                         >
                           <Eye className="h-4 w-4" />

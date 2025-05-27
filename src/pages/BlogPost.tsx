@@ -1,109 +1,15 @@
 
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { usePosts } from '@/hooks/usePosts';
 import Header from '@/components/Header';
 import { Calendar, User, Tag, ArrowLeft, Clock, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// Sample blog posts data with images
-const samplePosts = [
-  {
-    id: '1',
-    title: 'Getting Started with React Hooks: A Complete Guide',
-    excerpt: 'Learn how to use React Hooks to manage state and side effects in your functional components.',
-    content: `React Hooks revolutionized how we write React components by allowing us to use state and other React features without writing a class component. In this comprehensive guide, we'll explore the most important hooks and how to use them effectively.
-
-## What are React Hooks?
-
-React Hooks are functions that let you "hook into" React state and lifecycle features from function components. They were introduced in React 16.8 and have since become the standard way to write React components.
-
-## useState Hook
-
-The useState hook is the most fundamental hook for managing state in functional components:
-
-\`\`\`javascript
-import React, { useState } from 'react';
-
-function Counter() {
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}
-\`\`\`
-
-## useEffect Hook
-
-The useEffect hook lets you perform side effects in function components. It serves the same purpose as componentDidMount, componentDidUpdate, and componentWillUnmount combined.
-
-\`\`\`javascript
-import React, { useState, useEffect } from 'react';
-
-function Example() {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    document.title = \`You clicked \${count} times\`;
-  });
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
-}
-\`\`\`
-
-## Custom Hooks
-
-You can also create your own hooks to reuse stateful logic between components:
-
-\`\`\`javascript
-import { useState, useEffect } from 'react';
-
-function useCounter(initialValue = 0) {
-  const [count, setCount] = useState(initialValue);
-
-  const increment = () => setCount(count + 1);
-  const decrement = () => setCount(count - 1);
-  const reset = () => setCount(initialValue);
-
-  return { count, increment, decrement, reset };
-}
-\`\`\`
-
-## Best Practices
-
-1. **Always call hooks at the top level** - Don't call hooks inside loops, conditions, or nested functions
-2. **Use multiple state variables** - Instead of one complex state object, use multiple useState calls
-3. **Optimize with useMemo and useCallback** - For expensive calculations and preventing unnecessary re-renders
-4. **Clean up effects** - Always clean up subscriptions and timeouts in useEffect
-
-React Hooks provide a more direct API to the React concepts you already know. They don't change how React works fundamentally, but they do provide a more ergonomic way to reuse stateful logic and manage component lifecycle.`,
-    author: 'Sarah Johnson',
-    date: '2024-01-15',
-    category: 'Technology',
-    tags: ['React', 'JavaScript', 'Frontend'],
-    featured: true,
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face',
-    readTime: '8 min read',
-    views: 2400
-  }
-];
-
 const BlogPost = () => {
   const { id } = useParams();
-  const post = samplePosts.find(p => p.id === id);
+  const { getPostById } = usePosts();
+  const post = getPostById(id || '');
 
   if (!post) {
     return (
