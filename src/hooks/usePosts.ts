@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 interface BlogPost {
@@ -12,6 +11,9 @@ interface BlogPost {
   tags: string[];
   featured: boolean;
   views?: number;
+  image?: string;
+  authorAvatar?: string;
+  readTime?: string;
 }
 
 const STORAGE_KEY = 'blog_posts';
@@ -27,7 +29,10 @@ const defaultPosts: BlogPost[] = [
     category: 'Technology',
     tags: ['React', 'JavaScript', 'Frontend'],
     featured: true,
-    views: 1250
+    views: 1250,
+    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face',
+    readTime: '8 min read'
   },
   {
     id: '2',
@@ -39,7 +44,10 @@ const defaultPosts: BlogPost[] = [
     category: 'Technology',
     tags: ['Web Development', 'Trends', 'AI'],
     featured: false,
-    views: 890
+    views: 890,
+    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+    readTime: '6 min read'
   },
   {
     id: '3',
@@ -51,7 +59,10 @@ const defaultPosts: BlogPost[] = [
     category: 'Backend',
     tags: ['Node.js', 'API', 'Backend'],
     featured: false,
-    views: 654
+    views: 654,
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
+    readTime: '12 min read'
   },
   {
     id: '4',
@@ -63,7 +74,10 @@ const defaultPosts: BlogPost[] = [
     category: 'Design',
     tags: ['CSS', 'Layout', 'Frontend'],
     featured: false,
-    views: 432
+    views: 432,
+    image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
+    readTime: '10 min read'
   },
   {
     id: '5',
@@ -75,7 +89,10 @@ const defaultPosts: BlogPost[] = [
     category: 'Technology',
     tags: ['TypeScript', 'JavaScript', 'Programming'],
     featured: false,
-    views: 789
+    views: 789,
+    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=400&fit=crop',
+    authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
+    readTime: '15 min read'
   }
 ];
 

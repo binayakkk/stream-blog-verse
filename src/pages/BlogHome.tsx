@@ -5,130 +5,16 @@ import BlogCard from '@/components/BlogCard';
 import { Search, TrendingUp, Users, Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-
-// Enhanced sample blog posts data with images
-const samplePosts = [
-  {
-    id: '1',
-    title: 'Getting Started with React Hooks: A Complete Guide',
-    excerpt: 'Learn how to use React Hooks to manage state and side effects in your functional components. This comprehensive guide covers useState, useEffect, and custom hooks with practical examples.',
-    content: 'React Hooks revolutionized how we write React components...',
-    author: 'Sarah Johnson',
-    date: '2024-01-15',
-    category: 'Technology',
-    tags: ['React', 'JavaScript', 'Frontend'],
-    featured: true,
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face',
-    readTime: '8 min read'
-  },
-  {
-    id: '2',
-    title: 'The Future of Web Development in 2024',
-    excerpt: 'Explore the latest trends and technologies shaping the future of web development, from AI integration to new JavaScript frameworks and progressive web apps.',
-    content: 'Web development continues to evolve at a rapid pace...',
-    author: 'Mike Chen',
-    date: '2024-01-12',
-    category: 'Technology',
-    tags: ['Web Development', 'Trends', 'AI'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
-    readTime: '6 min read'
-  },
-  {
-    id: '3',
-    title: 'Building Scalable APIs with Node.js',
-    excerpt: 'Learn best practices for creating robust and scalable APIs using Node.js, Express, and modern development patterns. Includes performance optimization tips.',
-    content: 'Creating scalable APIs is crucial for modern applications...',
-    author: 'Alex Rodriguez',
-    date: '2024-01-10',
-    category: 'Backend',
-    tags: ['Node.js', 'API', 'Backend'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-    readTime: '12 min read'
-  },
-  {
-    id: '4',
-    title: 'CSS Grid vs Flexbox: When to Use What',
-    excerpt: 'A detailed comparison of CSS Grid and Flexbox, helping you choose the right layout method for your projects with real-world examples and best practices.',
-    content: 'CSS Grid and Flexbox are powerful layout tools...',
-    author: 'Emma Wilson',
-    date: '2024-01-08',
-    category: 'Design',
-    tags: ['CSS', 'Layout', 'Frontend'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
-    readTime: '10 min read'
-  },
-  {
-    id: '5',
-    title: 'Mastering TypeScript: Advanced Types and Patterns',
-    excerpt: 'Dive deep into TypeScript\'s advanced type system and learn patterns that will make your code more robust and maintainable in large-scale applications.',
-    content: 'TypeScript\'s type system is incredibly powerful...',
-    author: 'David Kim',
-    date: '2024-01-05',
-    category: 'Technology',
-    tags: ['TypeScript', 'JavaScript', 'Programming'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
-    readTime: '15 min read'
-  },
-  {
-    id: '6',
-    title: 'UX Design Principles for Better User Engagement',
-    excerpt: 'Discover essential UX design principles that drive user engagement and conversion. Learn how to create intuitive interfaces that users love.',
-    content: 'User experience design is at the heart of successful products...',
-    author: 'Jessica Park',
-    date: '2024-01-03',
-    category: 'Design',
-    tags: ['UX', 'Design', 'User Experience'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
-    readTime: '9 min read'
-  },
-  {
-    id: '7',
-    title: 'Machine Learning in Web Development',
-    excerpt: 'Explore how machine learning is transforming web development. From personalized content to intelligent automation, ML is changing the game.',
-    content: 'Machine learning integration in web apps is becoming mainstream...',
-    author: 'Dr. Raj Patel',
-    date: '2024-01-01',
-    category: 'Technology',
-    tags: ['Machine Learning', 'AI', 'Web Development'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=100&h=100&fit=crop&crop=face',
-    readTime: '11 min read'
-  },
-  {
-    id: '8',
-    title: 'Sustainable Web Development Practices',
-    excerpt: 'Learn how to build environmentally conscious websites that are both performant and sustainable. Green coding practices for the modern web.',
-    content: 'Sustainability in web development is becoming increasingly important...',
-    author: 'Maya Green',
-    date: '2023-12-28',
-    category: 'Technology',
-    tags: ['Sustainability', 'Performance', 'Green Tech'],
-    featured: false,
-    image: 'https://images.unsplash.com/photo-1486718448742-163732cd1544?w=800&h=400&fit=crop',
-    authorAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&h=100&fit=crop&crop=face',
-    readTime: '7 min read'
-  }
-];
+import { usePosts } from '@/hooks/usePosts';
 
 const BlogHome = () => {
+  const { posts } = usePosts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const categories = ['all', ...Array.from(new Set(samplePosts.map(post => post.category)))];
+  const categories = ['all', ...Array.from(new Set(posts.map(post => post.category)))];
   
-  const filteredPosts = samplePosts.filter(post => {
+  const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -140,9 +26,9 @@ const BlogHome = () => {
   const regularPosts = filteredPosts.filter(post => !post.featured);
 
   const stats = {
-    totalPosts: samplePosts.length,
-    authors: new Set(samplePosts.map(p => p.author)).size,
-    categories: new Set(samplePosts.map(p => p.category)).size
+    totalPosts: posts.length,
+    authors: new Set(posts.map(p => p.author)).size,
+    categories: new Set(posts.map(p => p.category)).size
   };
 
   return (
@@ -244,7 +130,7 @@ const BlogHome = () => {
                 {category.charAt(0).toUpperCase() + category.slice(1)}
                 {category !== 'all' && (
                   <span className="ml-3 text-sm bg-white/20 text-white px-3 py-1 rounded-full">
-                    {samplePosts.filter(p => p.category === category).length}
+                    {posts.filter(p => p.category === category).length}
                   </span>
                 )}
               </button>
