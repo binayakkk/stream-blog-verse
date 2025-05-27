@@ -9,8 +9,19 @@ import { useToast } from '@/hooks/use-toast';
 import { usePosts } from '@/hooks/usePosts';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
+interface Profile {
+  id: string;
+  full_name: string | null;
+  bio: string | null;
+  location: string | null;
+  website: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const ProfileSection = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
@@ -31,31 +42,71 @@ const ProfileSection = () => {
         setFormData({
           full_name: session.user.user_metadata?.full_name || '',
           email: session.user.email || '',
-          bio: session.user.user_metadata?.bio || '',
-          location: session.user.user_metadata?.location || '',
-          website: session.user.user_metadata?.website || ''
+          bio: '',
+          location: '',
+          website: ''
         });
+        await loadProfile(session.user.id);
       }
     };
     getUser();
   }, []);
+
+  const loadProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+      
+      if (data) {
+        setProfile(data);
+        setFormData(prev => ({
+          ...prev,
+          full_name: data.full_name || '',
+          bio: data.bio || '',
+          location: data.location || '',
+          website: data.website || ''
+        }));
+      }
+    } catch (error: any) {
+      console.error('Error loading profile:', error);
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
     
     setLoading(true);
     try {
-      // Update user metadata only
-      const { error: authError } = await supabase.auth.updateUser({
-        data: {
+      // Update or insert profile in profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
           full_name: formData.full_name,
           bio: formData.bio,
           location: formData.location,
-          website: formData.website
+          website: formData.website,
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) throw profileError;
+
+      // Also update user metadata for consistency
+      const { error: authError } = await supabase.auth.updateUser({
+        data: {
+          full_name: formData.full_name,
         }
       });
 
-      if (authError) throw authError;
+      if (authError) console.error('Auth update error:', authError);
 
       setEditing(false);
       toast({
@@ -63,17 +114,7 @@ const ProfileSection = () => {
         description: "Your profile has been updated successfully.",
       });
       
-      // Update local user state
-      setUser(prev => prev ? {
-        ...prev,
-        user_metadata: {
-          ...prev.user_metadata,
-          full_name: formData.full_name,
-          bio: formData.bio,
-          location: formData.location,
-          website: formData.website
-        }
-      } : null);
+      await loadProfile(user.id);
     } catch (error: any) {
       toast({
         title: "Error updating profile",
@@ -86,7 +127,7 @@ const ProfileSection = () => {
   };
 
   const userPosts = posts.filter(post => 
-    post.author === (formData.full_name || user?.email?.split('@')[0])
+    post.author === (profile?.full_name || formData.full_name || user?.email?.split('@')[0])
   );
 
   if (!user) {
@@ -109,7 +150,7 @@ const ProfileSection = () => {
             <div className="flex flex-col items-center space-y-4">
               <div className="relative">
                 <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-4xl font-bold">
-                  {(formData.full_name || user.email || 'U').charAt(0).toUpperCase()}
+                  {(profile?.full_name || formData.full_name || user.email || 'U').charAt(0).toUpperCase()}
                 </div>
                 <button className="absolute bottom-2 right-2 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors shadow-lg">
                   <Camera className="h-4 w-4" />
@@ -129,10 +170,10 @@ const ProfileSection = () => {
             <div className="flex-1 space-y-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  {formData.full_name || user.email?.split('@')[0] || 'User'}
+                  {profile?.full_name || formData.full_name || user.email?.split('@')[0] || 'User'}
                 </h1>
                 <p className="text-gray-600 leading-relaxed">
-                  {formData.bio || 'No bio available. Click edit to add your bio.'}
+                  {profile?.bio || 'No bio available. Click edit to add your bio.'}
                 </p>
               </div>
 
@@ -143,7 +184,7 @@ const ProfileSection = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-700">{formData.location || 'Location not set'}</span>
+                  <span className="text-gray-700">{profile?.location || 'Location not set'}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Calendar className="h-5 w-5 text-gray-400" />
