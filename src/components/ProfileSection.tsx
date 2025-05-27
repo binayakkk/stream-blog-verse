@@ -11,7 +11,6 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 const ProfileSection = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<any>(null);
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
@@ -36,36 +35,17 @@ const ProfileSection = () => {
           location: session.user.user_metadata?.location || '',
           website: session.user.user_metadata?.website || ''
         });
-        await loadProfile(session.user.id);
       }
     };
     getUser();
   }, []);
-
-  const loadProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-      
-      setProfile(data);
-    } catch (error: any) {
-      console.error('Error loading profile:', error);
-    }
-  };
 
   const handleSave = async () => {
     if (!user) return;
     
     setLoading(true);
     try {
-      // Update user metadata
+      // Update user metadata only
       const { error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: formData.full_name,
@@ -77,25 +57,23 @@ const ProfileSection = () => {
 
       if (authError) throw authError;
 
-      // Update or insert profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          email: formData.email,
-          full_name: formData.full_name,
-          updated_at: new Date().toISOString()
-        });
-
-      if (profileError) throw profileError;
-
       setEditing(false);
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
       
-      await loadProfile(user.id);
+      // Update local user state
+      setUser(prev => prev ? {
+        ...prev,
+        user_metadata: {
+          ...prev.user_metadata,
+          full_name: formData.full_name,
+          bio: formData.bio,
+          location: formData.location,
+          website: formData.website
+        }
+      } : null);
     } catch (error: any) {
       toast({
         title: "Error updating profile",
