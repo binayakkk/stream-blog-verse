@@ -10,7 +10,7 @@ interface BlogPost {
   content: string;
   author: string;
   date: string;
-  category: string;
+  category?: string;
   tags: string[];
   image?: string;
   authorAvatar?: string;
@@ -40,7 +40,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ post, featured = false }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
         <div className="absolute top-4 left-4">
           <span className="inline-block px-4 py-2 bg-white/90 backdrop-blur-sm text-blue-600 text-sm font-semibold rounded-full shadow-lg">
-            {post.category}
+            {post.category || 'Technology'}
           </span>
         </div>
         {featured && (

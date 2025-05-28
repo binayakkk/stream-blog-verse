@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +13,7 @@ interface BlogPost {
   content: string;
   author: string;
   date: string;
-  category: string;
+  category?: string;
   tags: string[];
   featured: boolean;
 }
@@ -82,13 +81,12 @@ const BlogPostForm: React.FC<BlogPostFormProps> = ({ post, onSave }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category">Category</Label>
               <Input
                 id="category"
                 value={formData.category}
                 onChange={(e) => handleChange('category', e.target.value)}
                 placeholder="Technology, Lifestyle, etc..."
-                required
               />
             </div>
             

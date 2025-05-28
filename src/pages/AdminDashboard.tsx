@@ -35,7 +35,7 @@ interface BlogPost {
   content: string;
   author: string;
   date: string;
-  category: string;
+  category?: string;
   tags: string[];
   featured: boolean;
   views?: number;
