@@ -1,171 +1,213 @@
 
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { usePosts } from '@/hooks/usePosts';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useSupabasePosts } from '@/hooks/useSupabasePosts';
 import Header from '@/components/Header';
-import { Calendar, User, Tag, ArrowLeft, Clock, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, Calendar, User, Tag, Clock, Eye, Share2 } from 'lucide-react';
 
 const BlogPost = () => {
-  const { id } = useParams();
-  const { getPostById } = usePosts();
-  const post = getPostById(id || '');
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { posts, loading, getPostById } = useSupabasePosts();
+  const [post, setPost] = useState<any>(null);
+
+  useEffect(() => {
+    if (!loading && id) {
+      const foundPost = getPostById(id);
+      if (foundPost) {
+        setPost(foundPost);
+      } else if (posts.length > 0) {
+        // Post not found and we've loaded posts
+        navigate('/');
+      }
+    }
+  }, [id, loading, posts, getPostById, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <Skeleton className="h-8 w-32 mb-8" />
+          <Skeleton className="h-12 w-full mb-4" />
+          <Skeleton className="h-6 w-3/4 mb-8" />
+          <Skeleton className="h-64 w-full mb-8" />
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Post Not Found</h1>
           <p className="text-gray-600 mb-8">The blog post you're looking for doesn't exist.</p>
-          <Link to="/">
-            <Button>← Back to Home</Button>
-          </Link>
+          <Button onClick={() => navigate('/')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
         </div>
       </div>
     );
   }
-
-  const formatContent = (content: string) => {
-    return content.split('\n\n').map((paragraph, index) => {
-      if (paragraph.startsWith('## ')) {
-        return (
-          <h2 key={index} className="text-2xl font-bold text-gray-900 mt-8 mb-4">
-            {paragraph.replace('## ', '')}
-          </h2>
-        );
-      }
-      
-      if (paragraph.includes('```')) {
-        const codeContent = paragraph.replace(/```\w*\n?/, '').replace(/```/, '');
-        return (
-          <pre key={index} className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6">
-            <code>{codeContent}</code>
-          </pre>
-        );
-      }
-      
-      if (paragraph.includes('`') && !paragraph.includes('```')) {
-        const parts = paragraph.split('`');
-        return (
-          <p key={index} className="text-gray-700 leading-relaxed mb-6">
-            {parts.map((part, i) => 
-              i % 2 === 0 ? part : (
-                <code key={i} className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
-                  {part}
-                </code>
-              )
-            )}
-          </p>
-        );
-      }
-      
-      return (
-        <p key={index} className="text-gray-700 leading-relaxed mb-6">
-          {paragraph}
-        </p>
-      );
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <Link to="/">
-            <Button variant="outline" className="flex items-center space-x-2">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Blog</span>
-            </Button>
-          </Link>
+        {/* Back Button */}
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/')} 
+          className="mb-8 hover:bg-blue-50"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Blog
+        </Button>
+
+        {/* Hero Image */}
+        <div className="relative mb-8 rounded-2xl overflow-hidden shadow-xl">
+          <img
+            src={post.image || 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=600&fit=crop'}
+            alt={post.title}
+            className="w-full h-96 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          {post.featured && (
+            <div className="absolute top-6 right-6">
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                Featured
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Hero Image */}
-          <div className="h-80 md:h-96 relative overflow-hidden">
-            <img
-              src={post.image || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1200&h=600&fit=crop'}
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-8 left-8 right-8">
-              <span className="inline-block px-4 py-2 bg-white/90 backdrop-blur-sm text-blue-600 text-sm font-semibold rounded-full mb-4">
-                {post.category}
-              </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-                {post.title}
-              </h1>
-            </div>
-          </div>
+        {/* Article Header */}
+        <Card className="mb-8 shadow-lg">
+          <CardContent className="p-8">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              {post.title}
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              {post.excerpt}
+            </p>
 
-          {/* Content */}
-          <div className="p-8 md:p-12">
             {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-200">
-              <div className="flex items-center space-x-3">
+            <div className="flex flex-wrap items-center gap-6 text-gray-500 mb-6">
+              <div className="flex items-center space-x-2">
                 <img
                   src={post.authorAvatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'}
                   alt={post.author}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md"
                 />
                 <div>
-                  <div className="font-semibold text-gray-900">By {post.author}</div>
-                  <div className="text-gray-500">{new Date(post.date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}</div>
+                  <span className="font-semibold text-gray-900">{post.author}</span>
                 </div>
               </div>
+              
+              <div className="flex items-center space-x-1">
+                <Calendar className="h-4 w-4" />
+                <span>{new Date(post.date).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}</span>
+              </div>
+              
               {post.readTime && (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                   <Clock className="h-4 w-4" />
                   <span>{post.readTime}</span>
                 </div>
               )}
-              {post.views && (
-                <div className="flex items-center space-x-2">
-                  <Eye className="h-4 w-4" />
-                  <span>{post.views.toLocaleString()} views</span>
-                </div>
-              )}
-              <div className="flex items-center space-x-2">
-                <Tag className="h-4 w-4" />
-                <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Article Content */}
-            <div className="prose prose-lg max-w-none">
-              <p className="text-xl text-gray-600 leading-relaxed mb-8 font-light">
-                {post.excerpt}
-              </p>
               
-              <div className="text-gray-800">
-                {formatContent(post.content)}
+              <div className="flex items-center space-x-1">
+                <Eye className="h-4 w-4" />
+                <span>{post.views || 0} views</span>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Related Posts Section */}
-        <div className="mt-12">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Related Posts</h3>
-          <div className="bg-white rounded-lg p-8 text-center shadow-lg">
-            <div className="text-6xl mb-4">📚</div>
-            <h4 className="text-xl font-semibold text-gray-700 mb-2">More great content coming soon!</h4>
-            <p className="text-gray-600">Check back later for more related articles and insights.</p>
-          </div>
-        </div>
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {post.tags.map((tag: string) => (
+                  <span key={tag} className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Share Button */}
+            <div className="flex justify-end">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: post.title,
+                      text: post.excerpt,
+                      url: window.location.href,
+                    });
+                  } else {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
+                className="flex items-center space-x-2"
+              >
+                <Share2 className="h-4 w-4" />
+                <span>Share</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Article Content */}
+        <Card className="shadow-lg">
+          <CardContent className="p-8">
+            <div className="prose prose-lg max-w-none">
+              <div 
+                className="text-gray-700 leading-relaxed"
+                style={{ whiteSpace: 'pre-wrap' }}
+              >
+                {post.content}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Author Bio */}
+        <Card className="mt-8 shadow-lg">
+          <CardContent className="p-8">
+            <div className="flex items-start space-x-4">
+              <img
+                src={post.authorAvatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'}
+                alt={post.author}
+                className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md"
+              />
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">About {post.author}</h3>
+                <p className="text-gray-600">
+                  A passionate writer sharing insights and knowledge with the community.
+                  Follow for more articles on technology, lifestyle, and innovation.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </article>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { usePosts } from '@/hooks/usePosts';
+import { useSupabasePosts } from '@/hooks/useSupabasePosts';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import BlogPostForm from '@/components/BlogPostForm';
@@ -24,7 +24,8 @@ import {
   Settings,
   FileText,
   TrendingUp,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 
 interface BlogPost {
@@ -46,23 +47,32 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   
-  const { posts, addPost, updatePost, deletePost, toggleFeatured } = usePosts();
+  const { posts, loading, user, addPost, updatePost, deletePost, toggleFeatured } = useSupabasePosts();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSavePost = (postData: Omit<BlogPost, 'id' | 'date'>) => {
+  // Redirect if not authenticated
+  React.useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [loading, user, navigate]);
+
+  const handleSavePost = async (postData: Omit<BlogPost, 'id' | 'date'>) => {
     if (editingPost) {
-      updatePost(editingPost.id, postData);
+      await updatePost(editingPost.id, postData);
       toast({
         title: "Post updated",
         description: "Your blog post has been successfully updated.",
       });
     } else {
-      addPost(postData);
-      toast({
-        title: "Post created",
-        description: "Your new blog post has been successfully created.",
-      });
+      const newPost = await addPost(postData);
+      if (newPost) {
+        toast({
+          title: "Post created",
+          description: "Your new blog post has been successfully created.",
+        });
+      }
     }
     
     setCurrentView('dashboard');
@@ -74,16 +84,16 @@ const AdminDashboard = () => {
     setCurrentView('edit');
   };
 
-  const handleDeletePost = (postId: string) => {
-    deletePost(postId);
+  const handleDeletePost = async (postId: string) => {
+    await deletePost(postId);
     toast({
       title: "Post deleted",
       description: "The blog post has been successfully deleted.",
     });
   };
 
-  const handleToggleFeatured = (postId: string) => {
-    toggleFeatured(postId);
+  const handleToggleFeatured = async (postId: string) => {
+    await toggleFeatured(postId);
     toast({
       title: "Post updated",
       description: "Featured status has been updated.",
@@ -94,20 +104,35 @@ const AdminDashboard = () => {
     navigate(`/post/${postId}`);
   };
 
-  const categories = ['all', ...Array.from(new Set(posts.map(post => post.category)))];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="text-lg">Loading dashboard...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect in useEffect
+  }
+
+  const categories = ['all', ...Array.from(new Set(posts.map(post => post.category || 'Technology')))];
   
   const filteredPosts = posts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = filterCategory === 'all' || post.category === filterCategory;
+    const matchesCategory = filterCategory === 'all' || (post.category || 'Technology') === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
   const stats = {
     totalPosts: posts.length,
     featuredPosts: posts.filter(p => p.featured).length,
-    categories: new Set(posts.map(p => p.category)).size,
+    categories: new Set(posts.map(p => p.category || 'Technology')).size,
     totalViews: posts.reduce((sum, post) => sum + (post.views || 0), 0).toLocaleString()
   };
 
@@ -211,7 +236,7 @@ const AdminDashboard = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-600">Total Posts</p>
                       <p className="text-3xl font-bold text-gray-900">{stats.totalPosts}</p>
-                      <p className="text-sm text-green-600">+2 this week</p>
+                      <p className="text-sm text-green-600">Stored in database</p>
                     </div>
                     <BarChart3 className="h-8 w-8 text-blue-600" />
                   </div>
@@ -250,7 +275,7 @@ const AdminDashboard = () => {
                     <div>
                       <p className="text-sm font-medium text-gray-600">Total Views</p>
                       <p className="text-3xl font-bold text-gray-900">{stats.totalViews}</p>
-                      <p className="text-sm text-orange-600">+15% this month</p>
+                      <p className="text-sm text-orange-600">From database</p>
                     </div>
                     <BarChart3 className="h-8 w-8 text-orange-600" />
                   </div>
@@ -315,7 +340,7 @@ const AdminDashboard = () => {
                           </span>
                           <span>{new Date(post.date).toLocaleDateString()}</span>
                           <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
-                            {post.category}
+                            {post.category || 'Technology'}
                           </span>
                           <span className="flex items-center space-x-1">
                             <Eye className="h-3 w-3" />
@@ -368,7 +393,12 @@ const AdminDashboard = () => {
                   {filteredPosts.length === 0 && (
                     <div className="text-center py-8">
                       <h3 className="text-lg font-medium text-gray-600 mb-2">No posts found</h3>
-                      <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+                      <p className="text-gray-500">
+                        {posts.length === 0 
+                          ? "Create your first blog post to get started!" 
+                          : "Try adjusting your search or filter criteria"
+                        }
+                      </p>
                     </div>
                   )}
                 </div>
